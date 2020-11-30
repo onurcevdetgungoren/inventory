@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:inventory/models/palet_satis.dart';
 import 'package:inventory/models/paletler.dart';
+import 'package:inventory/models/sayac.dart';
 import 'package:inventory/repository/palet_repository.dart';
 import '../locator.dart';
 
@@ -20,6 +22,11 @@ class PaletlerViewModel with ChangeNotifier {
   PaletlerState _state;
   PaletlerRepository _paletlerRepository = locator<PaletlerRepository>();
   Paletler _getirilenler;
+  Sayac _sayac;
+  //Sayacta toplam bundle ve toplam metrajı tutuyoruz, bu değişken ile onları alacağız.
+
+  //getirilenWeatherın sadece getterını yazdık
+  Sayac get sayac => _sayac;
   PaletlerViewModel() {
     _state = PaletlerState.InitialState;
     paletlerGetData();
@@ -102,12 +109,15 @@ class PaletlerViewModel with ChangeNotifier {
   }
 
   //ID İLE SİLME İŞLEMİ
-  Future<void> paletlerSilmeIslemiView(String id) async {
+  Future<void> paletlerSilmeIslemiView(Paletler palet) async {
+    //Buraya esasında String olarak sadece İd yi göndererekte bu işlemi yapabilirdik ama, Tüm Toplam envanterin tutulduğu
+    //Tabloda silme işleminden sonra eksiltme yapacağımız için mecburen Ebatlilar cinsinden model olarak gönderdik ama silme için
+    //Sadece yine id yi kullandık.
     print("add Tetiklendi");
     try {
       state = PaletlerState.LoadingState;
       print("loading tetiklendi");
-      _paletlerRepository.paletSilmeIslemiRepo(id);
+      _paletlerRepository.paletSilmeIslemiRepo(palet);
       state = PaletlerState.LoadedState;
       print("Loaded tetiklendi veri gönderildi");
     } catch (e) {
@@ -118,5 +128,36 @@ class PaletlerViewModel with ChangeNotifier {
 
   void stateGuncelle() {
     state = PaletlerState.InitialState;
+  }
+
+  //SATIŞ YAPMA, SATIŞ TABLOSU
+  //Satılanlar Tablosuna VERi EKLE
+  Future<void> paletSatisYapModel(PaletSatis paletSatis) async {
+    print("add Tetiklendi");
+    try {
+      state = PaletlerState.LoadingState;
+      print("loading tetiklendi");
+      _paletlerRepository.paletSatisYapRepo(paletSatis);
+      state = PaletlerState.LoadedState;
+      print("Loaded tetiklendi veri gönderildi");
+    } catch (e) {
+      state = PaletlerState.ErrorState;
+      print("Hata Alındı");
+    }
+  }
+
+  //SATILAN PLAKALRI LİSTELEME
+  //VERİLERİ LİSTELE
+  Future<List<PaletSatis>> getSatilanPaletModel() async {
+    Future<List<PaletSatis>> a;
+    try {
+      state = PaletlerState.LoadingState;
+      a = _paletlerRepository.getSatilanPaletler().then((value) =>
+          value.docs.map((e) => PaletSatis.fromMap(e.data())).toList());
+      state = PaletlerState.LoadedState;
+    } catch (e) {
+      state = PaletlerState.ErrorState;
+    }
+    return a;
   }
 }

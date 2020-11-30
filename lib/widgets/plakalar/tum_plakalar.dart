@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:inventory/models/ebatli.dart';
+import 'package:inventory/models/sayac.dart';
 import 'package:inventory/repository/ebatli_repository.dart';
 import 'package:inventory/view_models/ebatli_view_models.dart';
 import 'package:provider/provider.dart';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inventory/models/palet_satis.dart';
 import 'package:inventory/models/paletler.dart';
 import 'package:inventory/view_models/paletler_view_models.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ class SecilenPaletDetay extends StatelessWidget {
   String id;
   SecilenPaletDetay({@required this.id});
   var _fKey = GlobalKey<FormState>();
+  var _fKey2 = GlobalKey<FormState>();
   final _textControllerIsim = TextEditingController();
   final _textControllerCins = TextEditingController();
   final _textControllerId = TextEditingController();
@@ -15,6 +17,7 @@ class SecilenPaletDetay extends StatelessWidget {
   final _textControllerMetraj = TextEditingController();
   final _textControllerKalite = TextEditingController();
   final _textControllerqrUrl = TextEditingController();
+  final _textControllerMusteriAd = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -182,32 +185,210 @@ class SecilenPaletDetay extends StatelessWidget {
                                                 },
                                               ),
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Image.network(
-                                                  _textControllerqrUrl.text),
-                                            ),
+                                            //Satış yapma için TextField ve Button kısımları
+                                            //Burada Satış yapılacağı zaman müşteri ismi girilmesini istiyoruz ve Mevcut Plakayı envanterden silip, Satılan Paletler
+                                            //Tablosuna atıyoruz.
+                                            //Form2 açmamızın sebebi; Sil ve Güncelle işlemlerinde müşteri ismi girilmediğinde validate işlemi yapılamıyordu Bunun için
+                                            //Müşteri İsmini 2. bir _fkey ile tuttuk
+                                            Form(
+                                                key: _fKey2,
+                                                child: SingleChildScrollView(
+                                                  child: Column(
+                                                    children: [
+                                                      //Satış Button ve Müşteri İsmi Girilecek Text
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: TextFormField(
+                                                          controller:
+                                                              _textControllerMusteriAd,
+                                                          decoration:
+                                                              InputDecoration(
+                                                            labelText:
+                                                                "Satış için Müşteri İsmi Giriniz",
+                                                            hintText:
+                                                                "Müşteri İsmi",
+                                                            border:
+                                                                OutlineInputBorder(),
+                                                          ),
+                                                          validator: (s) {
+                                                            if (s.isEmpty) {
+                                                              return "Boş Olamaz";
+                                                            } else
+                                                              return null;
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )),
                                             //UPDATE BUTONU
-                                            ButtonTheme(
-                                              minWidth: 150,
-                                              height: 40,
-                                              child: RaisedButton(
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              18.0),
-                                                      side: BorderSide(
-                                                          color: Colors.red)),
-                                                  child: Text("Güncelle"),
-                                                  color: Colors.yellow.shade400,
-                                                  onPressed: () {
-                                                    if (_fKey.currentState
-                                                        .validate()) {
-                                                      //_fKey.currentState.save();
-                                                      _viewModel.addPaletView(
-                                                          Paletler(
-                                                              //Update Komutu ile, Ekleme komutu (.set) olarak aynı şekilde kullnılabilir, Oyüzdenyeni bir update Komutu açmadık.
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                ButtonTheme(
+                                                  minWidth: 150,
+                                                  height: 40,
+                                                  child: RaisedButton(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .red)),
+                                                      child: Text("Güncelle"),
+                                                      color: Colors
+                                                          .yellow.shade400,
+                                                      onPressed: () {
+                                                        if (_fKey.currentState
+                                                            .validate()) {
+                                                          //_fKey.currentState.save();
+                                                          _viewModel.addPaletView(
+                                                              Paletler(
+                                                                  //Update Komutu ile, Ekleme komutu (.set) olarak aynı şekilde kullnılabilir, Oyüzdenyeni bir update Komutu açmadık.
+                                                                  _textControllerKalite
+                                                                      .text,
+                                                                  _textControllerCins
+                                                                      .text,
+                                                                  int.parse(
+                                                                      _textControllerEn
+                                                                          .text),
+                                                                  int.parse(
+                                                                      _textControllerMetraj
+                                                                          .text),
+                                                                  _textControllerId
+                                                                      .text,
+                                                                  int.parse(
+                                                                      _textControllerBoy
+                                                                          .text),
+                                                                  _textControllerIsim
+                                                                      .text,
+                                                                  _textControllerqrUrl
+                                                                      .text));
+                                                        }
+                                                        (_viewModel.state ==
+                                                                PaletlerState
+                                                                    .LoadedState)
+                                                            ? veriGeldi(context)
+                                                            //Ana sayfa geri yüklendiği için direk GetData methodu tetikleniyor.
+                                                            : (_viewModel
+                                                                        .state ==
+                                                                    PaletlerState
+                                                                        .LoadingState)
+                                                                ? veriGeliyor()
+                                                                : (_viewModel
+                                                                            .state ==
+                                                                        PaletlerState
+                                                                            .ErrorState)
+                                                                    ? hataGeldi()
+                                                                    : Text(
+                                                                        "Seçim");
+                                                      }),
+                                                ),
+                                                //DELETE BUTTON
+                                                ButtonTheme(
+                                                  minWidth: 150,
+                                                  height: 40,
+                                                  child: RaisedButton(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .red)),
+                                                      child: Text("Sil"),
+                                                      color:
+                                                          Colors.green.shade300,
+                                                      onPressed: () {
+                                                        if (_fKey.currentState
+                                                            .validate()) {
+                                                          _fKey.currentState
+                                                              .save();
+                                                          _viewModel
+                                                              .paletlerSilmeIslemiView(
+                                                                  //Buraya esasında String olarak sadece İd yi göndererekte bu işlemi yapabilirdik ama, Tüm Toplam envanterin tutulduğu
+                                                                  //Tabloda silme işleminden sonra eksiltme yapacağımız için mecburen Ebatlilar cinsinden model olarak gönderdik ama silme için
+                                                                  //Sadece yine id yi kullandık.
+                                                                  Paletler(
+                                                                      //Update Komutu ile, Ekleme komutu (.set) olarak aynı şekilde kullnılabilir, Oyüzdenyeni bir update Komutu açmadık.
+                                                                      _textControllerKalite
+                                                                          .text,
+                                                                      _textControllerCins
+                                                                          .text,
+                                                                      int.parse(
+                                                                          _textControllerEn
+                                                                              .text),
+                                                                      int.parse(
+                                                                          _textControllerMetraj
+                                                                              .text),
+                                                                      _textControllerId
+                                                                          .text,
+                                                                      int.parse(
+                                                                          _textControllerBoy
+                                                                              .text),
+                                                                      _textControllerIsim
+                                                                          .text,
+                                                                      _textControllerqrUrl
+                                                                          .text));
+                                                        }
+
+                                                        (_viewModel.state ==
+                                                                PaletlerState
+                                                                    .LoadedState)
+                                                            ? veriGeldi(context)
+                                                            //Ana sayfa geri yüklendiği için direk GetData methodu tetikleniyor.
+                                                            : (_viewModel
+                                                                        .state ==
+                                                                    PaletlerState
+                                                                        .LoadingState)
+                                                                ? veriGeliyor()
+                                                                : (_viewModel
+                                                                            .state ==
+                                                                        PaletlerState
+                                                                            .ErrorState)
+                                                                    ? hataGeldi()
+                                                                    : Text(
+                                                                        "Seçim");
+                                                      }),
+                                                ),
+                                                //Satış Yap Butonu
+                                                ButtonTheme(
+                                                  minWidth: 150,
+                                                  height: 40,
+                                                  child: RaisedButton(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          18.0),
+                                                              side: BorderSide(
+                                                                  color: Colors
+                                                                      .red)),
+                                                      child: Text("Satış Yap",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white)),
+                                                      color:
+                                                          Colors.green.shade800,
+                                                      onPressed: () {
+                                                        if (_fKey2 //2.Form için oluşturduğumuz fKey2 yi kullandık çünkü yoksa diğer sil ve güncelle işlemlerinde Müşteri ismi Boş olduğunda
+                                                            //İşlem Yapmaz.
+                                                            .currentState
+                                                            .validate()) {
+                                                          _fKey.currentState
+                                                              .save();
+                                                          _fKey2.currentState
+                                                              .save();
+                                                          _viewModel.paletSatisYapModel(PaletSatis(
                                                               _textControllerKalite
                                                                   .text,
                                                               _textControllerCins
@@ -226,64 +407,64 @@ class SecilenPaletDetay extends StatelessWidget {
                                                               _textControllerIsim
                                                                   .text,
                                                               _textControllerqrUrl
+                                                                  .text,
+                                                              _textControllerMusteriAd
                                                                   .text));
-                                                    }
-                                                    (_viewModel.state ==
-                                                            PaletlerState
-                                                                .LoadedState)
-                                                        ? veriGeldi(context)
-                                                        //Ana sayfa geri yüklendiği için direk GetData methodu tetikleniyor.
-                                                        : (_viewModel.state ==
-                                                                PaletlerState
-                                                                    .LoadingState)
-                                                            ? veriGeliyor()
-                                                            : (_viewModel
-                                                                        .state ==
-                                                                    PaletlerState
-                                                                        .ErrorState)
-                                                                ? hataGeldi()
-                                                                : Text("Seçim");
-                                                  }),
-                                            ),
-                                            //DELETE BUTTON
-                                            ButtonTheme(
-                                              minWidth: 150,
-                                              height: 40,
-                                              child: RaisedButton(
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              18.0),
-                                                      side: BorderSide(
-                                                          color: Colors.red)),
-                                                  child: Text("Sil"),
-                                                  color: Colors.green.shade300,
-                                                  onPressed: () {
-                                                    if (_fKey.currentState
-                                                        .validate()) {
-                                                      _fKey.currentState.save();
-                                                      _viewModel
-                                                          .paletlerSilmeIslemiView(
-                                                              _textControllerId
-                                                                  .text);
-                                                    }
+                                                          _viewModel
+                                                              .paletlerSilmeIslemiView(
+                                                                  //Buraya esasında String olarak sadece İd yi göndererekte bu işlemi yapabilirdik ama, Tüm Toplam envanterin tutulduğu
+                                                                  //Tabloda silme işleminden sonra eksiltme yapacağımız için mecburen Ebatlilar cinsinden model olarak gönderdik ama silme için
+                                                                  //Sadece yine id yi kullandık.
+                                                                  Paletler(
+                                                                      //Update Komutu ile, Ekleme komutu (.set) olarak aynı şekilde kullnılabilir, Oyüzdenyeni bir update Komutu açmadık.
+                                                                      _textControllerKalite
+                                                                          .text,
+                                                                      _textControllerCins
+                                                                          .text,
+                                                                      int.parse(
+                                                                          _textControllerEn
+                                                                              .text),
+                                                                      int.parse(
+                                                                          _textControllerMetraj
+                                                                              .text),
+                                                                      _textControllerId
+                                                                          .text,
+                                                                      int.parse(
+                                                                          _textControllerBoy
+                                                                              .text),
+                                                                      _textControllerIsim
+                                                                          .text,
+                                                                      _textControllerqrUrl
+                                                                          .text));
+                                                        }
 
-                                                    (_viewModel.state ==
-                                                            PaletlerState
-                                                                .LoadedState)
-                                                        ? veriGeldi(context)
-                                                        //Ana sayfa geri yüklendiği için direk GetData methodu tetikleniyor.
-                                                        : (_viewModel.state ==
+                                                        (_viewModel.state ==
                                                                 PaletlerState
-                                                                    .LoadingState)
-                                                            ? veriGeliyor()
+                                                                    .LoadedState)
+                                                            ? veriGeldi(context)
+                                                            //Ana sayfa geri yüklendiği için direk GetData methodu tetikleniyor.
                                                             : (_viewModel
                                                                         .state ==
                                                                     PaletlerState
-                                                                        .ErrorState)
-                                                                ? hataGeldi()
-                                                                : Text("Seçim");
-                                                  }),
+                                                                        .LoadingState)
+                                                                ? veriGeliyor()
+                                                                : (_viewModel
+                                                                            .state ==
+                                                                        PaletlerState
+                                                                            .ErrorState)
+                                                                    ? hataGeldi()
+                                                                    : Text(
+                                                                        "Seçim");
+                                                      }),
+                                                ),
+                                              ],
+                                            ),
+                                            //QR Codeu resim olarak çekiyoruz.
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Image.network(
+                                                  _textControllerqrUrl.text),
                                             ),
                                           ],
                                         ),

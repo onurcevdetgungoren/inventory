@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:inventory/locator.dart';
 import 'package:inventory/login_page.dart';
+import 'package:inventory/view_models/ebatli_toplam_deger_view.dart';
 import 'package:inventory/view_models/ebatli_view_models.dart';
 import 'package:inventory/view_models/google_auth_view_models..dart';
+import 'package:inventory/view_models/palet_toplam_deger_view.dart';
 import 'package:inventory/view_models/qr_code_view_models.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart';
@@ -27,6 +29,14 @@ void main() async {
     (ChangeNotifierProvider<LoginViewModel>(
       //Logim için Provider
       create: (context) => LoginViewModel(),
+    )),
+    (ChangeNotifierProvider<EbatliDegerler>(
+      //Logim için Provider
+      create: (context) => EbatliDegerler(),
+    )),
+    (ChangeNotifierProvider<PaletDegerler>(
+      //Logim için Provider
+      create: (context) => PaletDegerler(),
     )),
   ], child: MyApp()));
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventory/models/ebatli.dart';
+import 'package:inventory/models/plaka_satis.dart';
+import 'package:inventory/models/sayac.dart';
 import 'package:inventory/repository/ebatli_repository.dart';
 import '../locator.dart';
 
@@ -100,12 +102,15 @@ class EbatliViewModel with ChangeNotifier {
   }
 
   //ID İLE SİLME İŞLEMİ
-  Future<void> silmeIslemiView(String id) async {
+  Future<void> silmeIslemiView(Ebatlilar ebatli) async {
+    //Buraya esasında String olarak sadece İd yi göndererekte bu işlemi yapabilirdik ama, Tüm Toplam envanterin tutulduğu
+    //Tabloda silme işleminden sonra eksiltme yapacağımız için mecburen Ebatlilar cinsinden model olarak gönderdik ama silme için
+    //Sadece yine id yi kullandık.
     print("add Tetiklendi");
     try {
       state = EbatliState.LoadingState;
       print("loading tetiklendi");
-      _ebatliRepository.silmeIslemiRepo(id);
+      _ebatliRepository.silmeIslemiRepo(ebatli);
       state = EbatliState.LoadedState;
       print("Loaded tetiklendi veri gönderildi");
     } catch (e) {
@@ -116,5 +121,36 @@ class EbatliViewModel with ChangeNotifier {
 
   void stateGuncelle() {
     state = EbatliState.InitialState;
+  }
+
+  //SATIŞ YAPMA, SATIŞ TABLOSU
+  //Satılanlar Tablosuna VERi EKLE
+  Future<void> satisYapView(PlakaSatis plakaSatis) async {
+    print("satisYap Tetiklendi");
+    try {
+      state = EbatliState.LoadingState;
+      print("loading tetiklendi");
+      _ebatliRepository.satisYapRepo(plakaSatis);
+      state = EbatliState.LoadedState;
+      print("Loaded tetiklendi veri gönderildi");
+    } catch (e) {
+      state = EbatliState.ErrorState;
+      print("Hata Alındı");
+    }
+  }
+
+  //SATILAN PLAKALRI LİSTELEME
+  //VERİLERİ LİSTELE
+  Future<List<PlakaSatis>> getSatilanPlakalarView() async {
+    Future<List<PlakaSatis>> a;
+    try {
+      state = EbatliState.LoadingState;
+      a = _ebatliRepository.getSatilanEbatlilar().then((value) =>
+          value.docs.map((e) => PlakaSatis.fromMap(e.data())).toList());
+      state = EbatliState.LoadedState;
+    } catch (e) {
+      state = EbatliState.ErrorState;
+    }
+    return a;
   }
 }

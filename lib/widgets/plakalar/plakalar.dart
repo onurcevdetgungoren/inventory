@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inventory/models/ebatli.dart';
 import 'package:inventory/view_models/ebatli_view_models.dart';
 import 'package:provider/provider.dart';
+import '../drawer.dart';
 import 'idsorgu_ile_gelen_plakalar.dart';
 import 'plaka_ekleme_dialog.dart';
 import 'sorgu_ekrani.dart';
@@ -23,6 +24,7 @@ class _PlakalarState extends State<Plakalar> {
   Widget build(BuildContext context) {
     return Consumer(
         builder: (context, EbatliViewModel _viewModel, widget) => Scaffold(
+            drawer: AppDrawer(),
             appBar: AppBar(
               title: Text("Plakalar"),
               actions: [

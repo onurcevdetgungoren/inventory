@@ -7,6 +7,12 @@ class FirebaseLogin {
     var authResult =
         await _auth.signInWithEmailAndPassword(email: mail, password: password);
     User user = authResult.user;
+    //Geçici olarak resim ve isim ataması için aşağıdaki kodu yazmıştık, burada tek kullanıcı oldupu için 1 seferlik yapmamız yetti
+    //Birden fazla hesap olduğunda create accountun altına bunu mutlaka açmal lazım.
+    /*user.updateProfile(
+        displayName: "Onur Cevdet",
+        photoURL:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrhyjCACzGS8WOSykuOzhPWbzqXAmYF9P7sQ&usqp=CAU");*/
     return user;
   }
 

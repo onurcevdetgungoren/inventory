@@ -100,17 +100,24 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   _loginViewmodel
                                       .signInViewModel(_mailController.text,
                                           _passwordController.text)
-                                      .then((value) {
-                                    if (value != null) {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  HomePage()));
-                                    } else {
-                                      return hataGeldi();
-                                    }
-                                  });
+                                      .then((value) => {
+                                            (_loginViewmodel.state ==
+                                                    LoginState.LoadedState)
+                                                ? Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            HomePage()))
+                                                : (_loginViewmodel.state ==
+                                                        LoginState.LoadingState)
+                                                    ? veriGeliyor()
+                                                    : (_loginViewmodel.state ==
+                                                            LoginState
+                                                                .ErrorState)
+                                                        ? hataGeldi()
+                                                        : Text("Hata")
+                                          });
+
                                   /* _loginViewmodel.state ==
                                           LoginState.LoadingState
                                       ? veriGeliyor()
@@ -143,7 +150,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   veriGeliyor() {
-    return CircularProgressIndicator();
+    return _sKey.currentState.showSnackBar(SnackBar(
+      content: Text("Giriş Yapılıyor"),
+      duration: Duration(seconds: 3),
+    ));
   }
 
   hataGeldi() {
@@ -153,3 +163,36 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     ));
   }
 }
+
+/*if (_fkey.currentState.validate()) {
+                                  _fkey.currentState.save();
+                                  _loginViewmodel
+                                      .signInViewModel(_mailController.text,
+                                          _passwordController.text)
+                                      .then((value) {
+                                    if (value != null) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  HomePage()));
+                                    } else {
+                                      return hataGeldi();
+                                    }
+                                  });
+                                  /* _loginViewmodel.state ==
+                                          LoginState.LoadingState
+                                      ? veriGeliyor()
+                                      : _loginViewmodel.state ==
+                                              LoginState.ErrorState
+                                          ? hataGeldi()
+                                          : _loginViewmodel.state ==
+                                                  LoginState.LoadedState
+                                              ? Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          HomePage()))
+                                              : Text("Hata");*/
+                                }
+                                return null; */

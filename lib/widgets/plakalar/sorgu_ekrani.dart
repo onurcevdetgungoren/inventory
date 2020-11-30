@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:inventory/view_models/qr_code_view_models.dart';
 import 'package:provider/provider.dart';
 
+import '../drawer.dart';
+
 class SorguEkrani extends StatefulWidget {
   @override
   _SorguEkraniState createState() => _SorguEkraniState();
@@ -17,6 +19,7 @@ class _SorguEkraniState extends State<SorguEkrani> {
     String isim;
     return Consumer(
         builder: (context, QrViewModels _qrViewModel, widget) => Scaffold(
+              drawer: AppDrawer(),
               appBar: AppBar(
                 title: Text("Sorgu Ekranı"),
               ),

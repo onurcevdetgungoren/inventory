@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:inventory/models/paletler.dart';
 import 'package:inventory/view_models/paletler_view_models.dart';
+import 'package:inventory/widgets/drawer.dart';
 import 'package:inventory/widgets/paletler/palet_ekleme_dialog.dart';
 import 'package:inventory/widgets/paletler/sorgu_ekrani_id_paletler.dart';
 import 'package:inventory/widgets/paletler/sorgu_ekrani_palet.dart';
@@ -26,6 +27,7 @@ class _PaletlerListState extends State<PaletlerList> {
   Widget build(BuildContext context) {
     return Consumer(
         builder: (context, PaletlerViewModel _viewModel, widget) => Scaffold(
+            drawer: AppDrawer(),
             appBar: AppBar(
               backgroundColor: Colors.green.shade300,
               title: Text("Paletler", style: TextStyle(color: Colors.black45)),
@@ -75,7 +77,6 @@ class _PaletlerListState extends State<PaletlerList> {
                 dialogAc();
               },
             ),
-            //Her MEthod için mutlaka yeni state tanımlamak en kritik nokta!
             body: (_viewModel.state == PaletlerState.LoadedState)
                 ? TumPaletler()
                 : (_viewModel.state == PaletlerState.LoadingState)
